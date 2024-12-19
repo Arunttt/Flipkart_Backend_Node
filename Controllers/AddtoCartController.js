@@ -1,5 +1,5 @@
 const AddtoCart = require('../Models/AddtoCart');
-
+const mongoose = require('mongoose');
 const createCart = async (req, res) => {
     try {
         const {
@@ -108,4 +108,19 @@ const getDisabledProductsByUserId = async (req, res) => {
 // }
 
 
-module.exports = { createCart,getDisabledProductsByUserId };
+const getProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const result = await AddtoCart.findById(id);
+
+        console.log("<==Product=Result===>", result);
+        res.status(200).json({ result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Error retrieving watch details" });
+    }
+}
+
+
+module.exports = { createCart,getDisabledProductsByUserId, getProductById };
