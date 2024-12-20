@@ -23,5 +23,5 @@ router.put('/update/:id', WatchesController.updateProduct);
 router.put('/watches/:Brand', WatchesController.updateWatch);
 router.delete('/watches/:Brand', WatchesController.deleteWatch);
 router.post('/disableProduct', WatchesController.Findbydisabel);
-
+router.get('/images/resize', WatchesController.imageProcess);
 module.exports = router;

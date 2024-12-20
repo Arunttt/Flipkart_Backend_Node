@@ -1,5 +1,43 @@
 const Watch = require('../Models/Watches');
 const mongoose = require('mongoose');
+const sharp = require('sharp');
+const express = require('express');
+const app = express();
+const path = require('path');
+const fs = require('fs');
+
+//-----Image Resize with hd------
+const imageProcess = async (req, res) => {
+    try {
+  
+        const originalImagePath = path.join('D:', 'images', 'my-images.jpg');
+
+        const imagesDir = path.join(__dirname, 'public', 'images');
+
+        if (!fs.existsSync(imagesDir)) {
+            fs.mkdirSync(imagesDir, { recursive: true });
+        }
+
+        const outputPath = path.join(imagesDir, 'resized-my.png');
+        
+
+        if (!fs.existsSync(originalImagePath)) {
+            return res.status(404).send('image not identify');
+        }
+
+        await sharp(originalImagePath)
+            .resize(1700, 300)
+            .toFile(outputPath);
+
+        console.log('Image Resize Successfully');
+        res.sendFile(outputPath);
+    } catch (error) {
+        console.error('Image error:', error);
+        res.status(500).send('error: ' + error.message);
+    }
+};
+
+
 
 // Create a new watch
 const createWatch = async (req, res) => {
@@ -284,6 +322,7 @@ module.exports = {
     fieldSearch,
     updateWatch,
     deleteWatch,
+    imageProcess,
 };
 
 
