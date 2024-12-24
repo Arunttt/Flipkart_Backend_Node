@@ -22,6 +22,7 @@ app.use(cors({
   methods : ["GET", "POST", "PUT", "DELETE"],
   credentials : true
 }));
+
 app.use(express.json())
 app.use(logger('dev'));
 app.use(express.json());
@@ -47,8 +48,8 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(port,'0.0.0.0', () => {
+  console.log(`Server is running on port http://0.0.0.0:${port}`);
 });
 
 

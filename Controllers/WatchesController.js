@@ -6,7 +6,7 @@ const app = express();
 const path = require('path');
 const fs = require('fs');
 
-//-----Image Resize with hd------
+//-----Image Resize with Original Image------
 const imageProcess = async (req, res) => {
     try {
   
