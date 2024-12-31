@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -48,6 +49,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'OTP is required'],
   },
+  jwtToken:{
+    type:String,
+  },
   otpExpires: {
     type: Date,
     required: [true, 'OTP expiration time is required'],
@@ -59,6 +63,16 @@ const userSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+userSchema.methods.generateAuthToken = async function () {
+  const token = jwt.sign(
+      { userId: this._id, mobileNumber: this.mobileNumber },
+      'your_jwt_secret_key', 
+      { expiresIn: '1h' }
+  );
+  this.jwtToken = token;
+  await this.save(); 
+  return token;
+};
 
 const LoginProcess = mongoose.model('LoginProcess', userSchema);
 

@@ -97,33 +97,31 @@ const updateProduct = async (req, res) => {
         const { id } = req.params;
         const {
             price,
-            cart_details, // This includes the quantity, total_amount, price_details, and savings
+            cart_details,
         } = req.body;
 
-        // Calculate any additional fields you need like final price
         const { price_details } = cart_details;
         const finalPrice = price - price_details.discount + price_details.platform_fee;
 
-        // Update the product in the database
         const updatedProduct = await Watch.findByIdAndUpdate(
             id,
             {
-                price,  // Update the price
-                cart_details,  // Update the cart details (quantity, total_amount, price_details, savings)
-                final_price: finalPrice,  // Calculate the final price
+                price,  
+                cart_details,  
+                final_price: finalPrice,  
             },
-            { new: true }  // Return the updated document
+            { new: true }  
         );
 
-        // If the product is not found, return an error
+        
         if (!updatedProduct) {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        // Return the updated product
+        
         res.status(200).json(updatedProduct);
     } catch (error) {
-        // Handle errors
+        
         res.status(500).json({ message: 'Error updating product', error });
     }
 };

@@ -72,6 +72,9 @@ const register = async (req, res) => {
 
         await sendOtpToEmail(mail, otp);
 
+        const token = await user.generateAuthToken();
+
+        
         res.status(200).json({message:'OTP sent to email. Please enter the OTP to proceed.',
             user:{
                 user_id:user.user_id,
@@ -79,7 +82,8 @@ const register = async (req, res) => {
                 lastName:user.lastName,
                 username:user.username,
                 mail:user.mail,
-                mobileNumber:user.mobileNumber
+                mobileNumber:user.mobileNumber,
+                jwtToken: token,
             }
     });
     } catch (error) {
@@ -87,6 +91,21 @@ const register = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+const verifyToken = (req,res,next) => {
+    const token = req.header('Authorization');
+    if(!token){
+        return res.status(401).json({message:'Access Denied'});
+    }
+
+    try{
+        const verified = jwt.verify(token,'Your_jwt_secret_key')
+        req.user = verified;
+        next();
+    }catch(err){
+        res.status(500).json({message:'Token Expire or Invalid'});
+    }
+}
 
 const verifyOtpAndSetPassword = async (req, res) => {
     const { otp, mobileNumber, password } = req.body;
@@ -143,4 +162,4 @@ const loginRemote = async (req,res) => {
 };
 
 
-module.exports = { register, verifyOtpAndSetPassword, loginRemote };
+module.exports = { register, verifyOtpAndSetPassword, loginRemote, verifyToken };
