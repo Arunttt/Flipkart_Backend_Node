@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
+const Watches = require('../Models/Watches');
 
 //-----Image Resize with Original Image------
 const imageProcess = async (req, res) => {
@@ -91,6 +92,55 @@ const createWatch = async (req, res) => {
 
 //----------New Update----------------
 
+const updatePriceAndDiscount = async (req, res) => {
+    try {
+      const { id } = req.params; 
+      const { rupees } = req.body;  
+
+      const rupeesValue = Number(rupees);
+
+      if (isNaN(rupeesValue)) {
+        return res.status(400).json({ message: "Invalid rupees value!" });
+      }
+
+      let product = await Watch.findById(id);
+  
+      if (!product) {
+        return res.status(404).json({ message: "Product not found!" });
+      }
+
+      let storedData = {
+        original_price: product.price, 
+        discounted_price: product.discounted_price, 
+        rupees: product.rupees, 
+        final_price: product.final_price,
+        total_amount: product.cart_details.total_amount,
+        discount: product.cart_details.price_details.discount || 0, 
+      };
+
+      storedData.rupees = rupeesValue;
+      storedData.discount = storedData.original_price - storedData.rupees;
+  
+      product.discounted_price = storedData.rupees;
+      product.final_price = storedData.rupees + 3;
+      product.rupees = storedData.rupees;
+      product.cart_details.price_details.discount = storedData.discount;
+      product.cart_details.total_amount = storedData.rupees + 3;
+
+      await product.save();
+      res.status(200).json({
+        message: "Price and discount updated dynamically!",
+        data: storedData,
+      });
+    } catch (error) {
+      console.error("Error dynamically updating price and discount:", error);
+      res.status(500).json({
+        message: "Internal server error!",
+      });
+    }
+};
+
+
 // Update Product Controller
 const updateProduct = async (req, res) => {
     try {
@@ -175,7 +225,7 @@ const updateProduct = async (req, res) => {
 const getAllWatches = async (req, res) => {
     try {
         const watches = await Watch.find();
-        res.status(200).json(watches);
+        res.status(200).json("watches");
     } catch (error) {
         res.status(500).json({ message: 'Failed to fetch watches', error });
     }
@@ -321,6 +371,7 @@ module.exports = {
     updateWatch,
     deleteWatch,
     imageProcess,
+    updatePriceAndDiscount,
 };
 
 

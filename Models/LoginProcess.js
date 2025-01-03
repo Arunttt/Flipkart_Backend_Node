@@ -45,6 +45,11 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Mobile number is required'],
     unique: true,
   },
+  role: { 
+    type: String,
+    enum: ['User', 'Admin'], 
+    default: 'User' 
+  },
   otp: {
     type: String,
     required: [true, 'OTP is required'],

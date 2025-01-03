@@ -4,6 +4,9 @@ const orderSchema = new mongoose.Schema({
     name: {
         type: String,
     },
+    productName:{
+        type: String,
+    },
     mobileNumber: {
         type: Number,
         required: [true, 'Enter a Mobile Number'],

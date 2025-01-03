@@ -46,10 +46,14 @@ const sendOtpToEmail = async (mail, otp) => {
 //-----------Register-----------------
 
 const register = async (req, res) => {
-    const { firstName, lastName, username, mail, mobileNumber } = req.body;
+    const { firstName, lastName, username, mail, mobileNumber, role } = req.body;
 
     try {
 
+        if (role && !['User', 'Admin'].includes(role)) {
+            return res.status(400).send('Invalid Role');
+        }
+        
         let user = await LoginProcess.findOne({ mobileNumber });
 
         if (user) {
@@ -66,6 +70,7 @@ const register = async (req, res) => {
             mobileNumber,
             otp,
             otpExpires: Date.now() + 300000,
+            role: role || 'User',
         });
 
         await user.save();
@@ -84,6 +89,7 @@ const register = async (req, res) => {
                 mail:user.mail,
                 mobileNumber:user.mobileNumber,
                 jwtToken: token,
+                role: user.role,
             }
     });
     } catch (error) {
